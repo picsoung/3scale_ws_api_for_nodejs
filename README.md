@@ -10,6 +10,10 @@ More product stuff at http://www.3scale.net/, support information at http://supp
 
 Starting at version 0.5.0, this plugin requires using **Node.js versions 0.8.x or higher**. Node.js 0.6.x is no longer supported due to incompatibilities that break the tests.
 
+## Installation
+
+`npm install 3scale --save`
+
 
 ## Synopsis
 
