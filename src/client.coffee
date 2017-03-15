@@ -1,16 +1,8 @@
 https       = require 'https'
 querystring = require 'qs'
-<<<<<<< 755c856f429b51862cb60cb1ed4ac289e413a9ac
 xml2js      = require 'xml2js'
 Promise     = require('es6-promise').Promise
 VERSION     = require('../package.json').version
-=======
-Q = require 'q'
-xml2js = require "xml2js"
-parser = new xml2js.Parser({explicitArray:false,mergeAttrs:true,explicitAttrs: true,charkey:"text"})
-
-VERSION = require('../package.json').version
->>>>>>> use xml2js
 
 Response          = require './response'
 AuthorizeResponse = require './authorize_response'
@@ -246,11 +238,11 @@ module.exports = class Client
   ###
     Authorize and Report in a single call with OAuth
     ------------------------------------------------
-    
+
     Parameters:
       options is a Hash object with the following fields:
         service_token Required if you didn't use provider_key to ceate the Client instance
-        app_id Required. app_id is your Client ID. 
+        app_id Required. app_id is your Client ID.
         service_id Required (from November 2016)
       callback {Function} Is the callback function that receives the Response object which includes `is_success` method to determine the status of the response
 
@@ -260,7 +252,7 @@ module.exports = class Client
           # All Ok
         else
          sys.puts "#{response.error_message} with code: #{response.error_code}"
-  
+
     Example using service_token:
       client.authrep_oauth {service_token: '12sdtsdr23454sdfsdf', service_id: '1234567890987', app_id: '87654321'}, (response) ->
         if response.is_success
