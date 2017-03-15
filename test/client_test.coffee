@@ -84,7 +84,7 @@ describe 'Basic test for the 3Scale::Client', ->
         .query({ service_id: '1234567890987', app_key: 'bar', app_id: 'foo', service_token: '12sdtsdr23454sdfsdf' })
         .reply(200, '<status><authorized>true</authorized><plan>Basic</plan></status>')
 
-      client = new Client 
+      client = new Client
       client.authorize {service_token: '12sdtsdr23454sdfsdf', service_id: '1234567890987', app_key: 'bar', app_id: 'foo'}, (response) ->
         assert response.is_success()
         assert.equal response.status_code, 200
@@ -152,7 +152,13 @@ describe 'Basic test for the 3Scale::Client', ->
 
     it 'should call the callback with a 200 response if app_id was ok', (done) ->
       nock('https://su1.3scale.net')
-        .get('/transactions/oauth_authrep.xml?service_id=1234567890987&app_id=foo&usage%5Bhits%5D=1&provider_key=1234abcd')
+        .get('/transactions/oauth_authrep.xml')
+        .query({
+          service_id: 1234567890987,
+          app_id: "foo",
+          "usage[hits]": 1,
+          provider_key: "1234abcd"
+          })
         .reply(200, '<status><authorized>true</authorized><plan>Basic</plan></status>')
 
       client = new Client '1234abcd'
@@ -224,7 +230,7 @@ describe 'Basic test for the 3Scale::Client', ->
         .post('/transactions.xml')
         .reply(202)
 
-      client = new Client 
+      client = new Client
       client.report report_test_service_token, (response) ->
         assert response.is_success()
         done()
@@ -250,4 +256,3 @@ describe 'Basic test for the 3Scale::Client', ->
 
     after ->
       nock.cleanAll()
-
