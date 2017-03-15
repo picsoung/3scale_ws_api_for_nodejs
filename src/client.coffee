@@ -1,8 +1,16 @@
 https       = require 'https'
 querystring = require 'qs'
+<<<<<<< 755c856f429b51862cb60cb1ed4ac289e413a9ac
 xml2js      = require 'xml2js'
 Promise     = require('es6-promise').Promise
 VERSION     = require('../package.json').version
+=======
+Q = require 'q'
+xml2js = require "xml2js"
+parser = new xml2js.Parser({explicitArray:false,mergeAttrs:true,explicitAttrs: true,charkey:"text"})
+
+VERSION = require('../package.json').version
+>>>>>>> use xml2js
 
 Response          = require './response'
 AuthorizeResponse = require './authorize_response'
@@ -15,24 +23,23 @@ parser = new xml2js.Parser
 
 ###
   3Scale client API
-  Parameter: 
-    provider_key {String} Required if you don't use service_token in the method. 
-    Options: 
+  Parameter:
+    provider_key {String} Required if you don't use service_token in the method.
+    Options:
       host {String} Optional
       port {number} Optional
-  
+
   Example:
     Client = require('3scale').Client
-    
+
     client = new Client(provider_key, options)    //If you use your provider_key
-    or 
+    or
     client = new Client(options)                  //If you use a service_token in the method
 ###
 
 
 module.exports = class Client
   DEFAULT_HEADERS: { "X-3scale-User-Agent": "plugin-node-v#{VERSION}" }
-
 
   constructor: (provider_key, options) ->
     if typeof provider_key is 'object' and options is undefined
@@ -45,19 +52,16 @@ module.exports = class Client
     @host = opts?.host ? 'su1.3scale.net'
     @port = opts?.port ? 443
 
-    
-
-
   ###
     Authorize an Application
     ------------------------
 
     Parameters:
       options is a Hash object with the following fields
-        service_token Required if you didn't use provider_key to ceate the Client instance 
+        service_token Required if you didn't use provider_key to ceate the Client instance
         app_id Required
         service_id Required (from November 2016)
-        app_key Optional 
+        app_key Optional
         referrer Optional
         usage Optional
       callback {Function} Is the callback function that receives the Response object which includes `is_success` method to determine the status of the response
@@ -80,13 +84,13 @@ module.exports = class Client
   authorize: (options, callback) ->
     result = null
 
-    this._verify_app_id_exists options 
+    this._verify_app_id_exists options
 
     query = this._build_query_string options
     req_opts = this._prepare_request "/transactions/authorize.xml", query
 
     this._do_request_response req_opts, callback, "Client::authorize"
-    
+
 
 
   ###
@@ -95,7 +99,7 @@ module.exports = class Client
 
     Parameters:
       options is a Hash object with the following fields
-        service_token Required if you didn't use provider_key to ceate the Client instance 
+        service_token Required if you didn't use provider_key to ceate the Client instance
         app_id Required
         service_id Required (from November 2016)
       callback {Function} Is the callback function that receives the Response object which includes `is_success` method to determine the status of the response
@@ -159,13 +163,13 @@ module.exports = class Client
     req_opts = this._prepare_request "/transactions/authorize.xml", query
 
     this._do_request_response req_opts, callback, "Client::authorize_with_user_key"
-    
+
 
 
   ###
     Authorize and Report in a single call with app_id and app_key
     -------------------------------------------------------------
-    
+
     Parameters:
       options is a Hash object with the following fields
         service_token Required if you didn't use provider_key to ceate the Client instance
@@ -204,7 +208,7 @@ module.exports = class Client
   ###
     Authorize and Report in a single call with user_key
     ---------------------------------------------------
-    
+
     Parameters:
       options is a Hash object with the following fields
         service_token Required if you didn't use provider_key to ceate the Client instance
@@ -218,7 +222,7 @@ module.exports = class Client
           # All Ok
         else
          sys.puts "#{response.error_message} with code: #{response.error_code}"
-  
+
     Example using service_token:
       client.authrep_with_user_key {service_token: '12sdtsdr23454sdfsdf', service_id: '1234567890987', user_key: 'ca5c5a49'}, (response) ->
         if response.is_success
@@ -244,7 +248,7 @@ module.exports = class Client
     Parameters:
       service_id {String} Required (from November 2016)
       trans {Array} Each array element contain information of a transaction. That information is in a Hash in the form
-        A) if you used provider_key to ceate the Client instance 
+        A) if you used provider_key to ceate the Client instance
         {
           app_id {String} Required
           usage {Hash} Required
@@ -260,7 +264,7 @@ module.exports = class Client
 
       callback {Function} Function that recive the Response object which include a `is_success` method. Required
 
-    
+
     Example using provider_key:
       trans = [
         { "app_id": "abc123", "usage": {"hits": 1}},
@@ -304,7 +308,7 @@ module.exports = class Client
       params = {transactions: trans}
     else
       params = {transactions: trans, provider_key: @provider_key}
-    
+
     params.service_id = service_id if service_id
 
     query = querystring.stringify(params).replace(/\[/g, "%5B").replace(/\]/g, "%5D")
@@ -357,7 +361,7 @@ module.exports = class Client
           undefined
         else
           value
-      query = querystring.stringify options, replacer   
+      query = querystring.stringify options, replacer
       query += '&' + querystring.stringify {provider_key: @provider_key}
     return query
 
@@ -395,15 +399,15 @@ module.exports = class Client
     return this._prepareRequestObject(@DEFAULT_HEADERS, 'GET', @host, @port, path, query)
 
   ###
-   Grants options.app_id exists. 
+   Grants options.app_id exists.
    If param `options` is not an object or doesn't contain 'app_id' throws error
   ###
   _verify_app_id_exists: (options) ->
-    if (typeof options isnt 'object') || (options.app_id is undefined) 
+    if (typeof options isnt 'object') || (options.app_id is undefined)
       throw "missing app_id"
 
   ###
-   Grants options.user_key exists. 
+   Grants options.user_key exists.
    If param `options` is not an object or doesn't contain 'user_key' throws error
   ###
   _verify_user_key_exists: (options) ->
@@ -414,7 +418,7 @@ module.exports = class Client
   _parseXML: (xml) ->
     return new Promise (resolve, reject) ->
       parser.parseString xml, (err, res) ->
-        if err 
+        if err
           reject(err)
         else
           resolve(res)
@@ -435,7 +439,7 @@ module.exports = class Client
         response.error(status_code, reason)
 
       response.set_plan plan
-      
+
       if usage_reports
 
         usage_reports = if usage_reports.usage_report.length? then usage_reports.usage_report else [usage_reports.usage_report]
@@ -447,7 +451,7 @@ module.exports = class Client
               metric: usage_report.metric
               current_value: usage_report.current_value
               max_value: usage_report.max_value
-            
+
             if report.period isnt 'eternity'
               report.period_start = usage_report.period_start
               report.period_end   = usage_report.period_end
